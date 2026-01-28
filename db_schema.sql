@@ -35,7 +35,7 @@ CREATE TABLE department_head (
     employee_id INTEGER UNIQUE REFERENCES employee(employee_id),
     head_role VARCHAR(100),
     head_term VARCHAR(50),
-    department_id INTEGER UNIQUE -- FK added later
+    department_id INTEGER UNIQUE REFERENCES department(department_id) -- Link directly!
 );
 
 -- Department Table
@@ -43,7 +43,7 @@ CREATE TABLE department (
     department_id SERIAL PRIMARY KEY,
     department_name VARCHAR(100) NOT NULL,
     department_location VARCHAR(255),
-    head_id INTEGER REFERENCES department_head(head_id),
+    -- head_id REMOVED from here
     department_capacity INTEGER,
     department_contact VARCHAR(255)
 );
@@ -215,13 +215,16 @@ INSERT INTO employee (employee_name) VALUES
 ('Charlie Brown');
 
 -- Department Heads & Departments
-INSERT INTO department_head (employee_id, head_role, head_term) VALUES 
-(1, 'HR Director', '2024-2026'),
-(2, 'Lead Engineer', '2023-2025');
 
-INSERT INTO department (department_name, department_location, head_id, department_capacity, department_contact) VALUES 
-('Human Resources', 'Building A', 1, 10, 'contact@hr.com'),
-('Engineering', 'Building B', 2, 50, 'tech@eng.com');
+-- 1. Insert Departments first (Cleaner!)
+INSERT INTO department (department_name, department_location, department_capacity, department_contact) VALUES
+('Human Resources', 'Building A', 10, 'contact@hr.com'),
+('Engineering', 'Building B', 50, 'tech@eng.com');
+
+-- 2. Insert Heads (referencing the departments above)
+INSERT INTO department_head (employee_id, head_role, head_term, department_id) VALUES
+(1, 'HR Director', '2024-2026', 1),
+(2, 'Lead Engineer', '2023-2025', 2);
 
 UPDATE department_head SET department_id = 1 WHERE head_id = 1;
 UPDATE department_head SET department_id = 2 WHERE head_id = 2;

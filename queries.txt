@@ -8,44 +8,27 @@ CREATE TABLE employee (
     employee_name VARCHAR(100)
 );
 
--- 3. Department Head Table (Must be created before Department to avoid circular dependency issues during insertion, 
--- or created after and linked via ALTER. Here we create it first with nullable department_id initially if needed, 
--- but strictly speaking, circular FKs usually require creating tables first then adding constraints. 
--- For simplicity based on your previous script, I will create tables then add FKs where circular.)
-
-CREATE TABLE department_head (
-    head_id SERIAL PRIMARY KEY,
-    employee_id INTEGER UNIQUE REFERENCES employee(employee_id),
-    head_role VARCHAR(100),
-    head_term VARCHAR(50)
-    -- department_id will be added/linked below
-);
-
--- 4. Department Table
+-- 3. Department Table (Created FIRST now)
+-- REMOVED: head_id column (It caused the circular issue)
 CREATE TABLE department (
     department_id SERIAL PRIMARY KEY,
     department_name VARCHAR(100) NOT NULL,
     department_location VARCHAR(255),
-    head_id INTEGER, -- FK to department_head
     department_capacity INTEGER,
     department_contact VARCHAR(255)
 );
 
--- 5. Add Constraints for Department <-> Department Head
--- Link Department to its Head
-ALTER TABLE department
-    ADD CONSTRAINT fk_department_head
-    FOREIGN KEY (head_id) REFERENCES department_head(head_id);
+-- 4. Department Head Table (Created SECOND)
+-- ADDED: Direct link to department_id
+CREATE TABLE department_head (
+    head_id SERIAL PRIMARY KEY,
+    employee_id INTEGER UNIQUE REFERENCES employee(employee_id),
+    head_role VARCHAR(100),
+    head_term VARCHAR(50),
+    department_id INTEGER UNIQUE REFERENCES department(department_id) -- Direct FK!
+);
 
--- Link Head to their Department (Circular)
-ALTER TABLE department_head
-    ADD COLUMN department_id INTEGER UNIQUE;
-
-ALTER TABLE department_head
-    ADD CONSTRAINT fk_head_department
-    FOREIGN KEY (department_id) REFERENCES department(department_id);
-
--- 6. Salaries Table (The New Integrated Module)
+-- 5. Salaries Table (The New Integrated Module)
 CREATE TABLE salaries (
     salary_id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL UNIQUE, -- One salary record per employee
@@ -60,7 +43,7 @@ CREATE TABLE salaries (
         ON DELETE CASCADE
 );
 
--- 7. Sample Data Insertion (Testing the links)
+-- 6. Sample Data Insertion (Testing the links)
 
 -- Insert Employees
 INSERT INTO employee (employee_name) VALUES 
@@ -68,19 +51,15 @@ INSERT INTO employee (employee_name) VALUES
 ('Bob Williams'), 
 ('Charlie Brown');
 
--- Insert Department Head Info (initially without department_id)
-INSERT INTO department_head (employee_id, head_role, head_term) VALUES 
-(1, 'HR Director', '2024-2026'),
-(2, 'Lead Engineer', '2023-2025');
+-- Insert Departments (Now Independent!)
+INSERT INTO department (department_name, department_location, department_capacity, department_contact) VALUES 
+('Human Resources', 'Building A', 10, 'contact@hr.com'),
+('Engineering', 'Building B', 50, 'tech@eng.com');
 
--- Insert Departments (linking to heads)
-INSERT INTO department (department_name, department_location, head_id, department_capacity, department_contact) VALUES 
-('Human Resources', 'Building A', 1, 10, 'contact@hr.com'),
-('Engineering', 'Building B', 2, 50, 'tech@eng.com');
-
--- Update Department Heads with their Department IDs
-UPDATE department_head SET department_id = 1 WHERE head_id = 1;
-UPDATE department_head SET department_id = 2 WHERE head_id = 2;
+-- Insert Department Heads (Linking to Employees AND Departments immediately)
+INSERT INTO department_head (employee_id, head_role, head_term, department_id) VALUES 
+(1, 'HR Director', '2024-2026', 1),   -- Alice manages HR (Dept 1)
+(2, 'Lead Engineer', '2023-2025', 2); -- Bob manages Engineering (Dept 2)
 
 -- Insert Salaries (Linking to Employees)
 INSERT INTO salaries (employee_id, base_salary, bonus, deductions, net_salary) VALUES 
@@ -100,7 +79,7 @@ LEFT JOIN department d ON dh.department_id = d.department_id;
 
 -- ... (Previous Employee, Department, Salary tables exist here) ...
 
--- 8. Shift Table
+-- 7. Shift Table
 CREATE TABLE shift (
     shift_id SERIAL PRIMARY KEY,
     shift_type VARCHAR(50) NOT NULL, -- Morning, Evening, etc.
@@ -109,7 +88,7 @@ CREATE TABLE shift (
     break_duration INTEGER -- in minutes
 );
 
--- 9. Timesheet Table
+-- 8. Timesheet Table
 CREATE TABLE timesheet (
     timesheet_id SERIAL PRIMARY KEY,
     employee_id INTEGER NOT NULL,
@@ -133,7 +112,7 @@ CREATE TABLE timesheet (
         REFERENCES shift(shift_id)
 );
 
--- 10. Sample Data (Derived from your DataLoader.java)
+-- 9. Sample Data (Derived from your DataLoader.java)
 
 -- Insert Shifts
 INSERT INTO shift (shift_type, start_time, end_time, break_duration) VALUES
@@ -163,7 +142,7 @@ JOIN shift s ON t.shift_id = s.shift_id;
 
 -- ... (Previous Employee, Department, Salary, Shift, Timesheet tables) ...
 
--- 11. Position Details Table (1-to-1 with Employee)
+-- 10. Position Details Table (1-to-1 with Employee)
 CREATE TABLE position_details (
     employee_id INTEGER PRIMARY KEY, -- PK acts as FK to employee
     title VARCHAR(100) NOT NULL,
@@ -182,7 +161,7 @@ CREATE TABLE position_details (
         ON DELETE CASCADE
 );
 
--- 12. Responsibility Table (UPDATED)
+-- 11. Responsibility Table (UPDATED)
 CREATE TABLE responsibility (
     responsibility_id SERIAL PRIMARY KEY,
     
@@ -215,7 +194,7 @@ CREATE TABLE responsibility (
         ON DELETE SET NULL
 );
 
--- 13. Task Table (Converted from UUID to Serial Integer)
+-- 12. Task Table (Converted from UUID to Serial Integer)
 CREATE TABLE task (
     task_id SERIAL PRIMARY KEY,
     responsibility_id INTEGER,
@@ -238,7 +217,7 @@ CREATE TABLE task (
 
 -- ... (Previous tables: Employee, Department, Salary, Shift, Timesheet, Position, Responsibility, Task) ...
 
--- 14. Client Table
+-- 13. Client Table
 CREATE TABLE client (
     client_id SERIAL PRIMARY KEY,
     client_name VARCHAR(255) NOT NULL,
@@ -248,7 +227,7 @@ CREATE TABLE client (
     status VARCHAR(50)
 );
 
--- 15. Project Table
+-- 14. Project Table
 CREATE TABLE project (
     project_id SERIAL PRIMARY KEY,
     project_name VARCHAR(255) NOT NULL,
@@ -272,7 +251,7 @@ CREATE TABLE project (
 
 -- ... (Previous tables: Employee, Department, Salary, Shift, Timesheet, Position, Responsibility, Task, Client, Project) ...
 
--- 17. Credential Table (Bridge between HR and IT)
+-- 15. Credential Table (Bridge between HR and IT)
 CREATE TABLE credential (
     user_id SERIAL PRIMARY KEY,
     employee_id INTEGER UNIQUE NOT NULL, -- 1-to-1 link to Employee
@@ -283,7 +262,7 @@ CREATE TABLE credential (
         ON DELETE CASCADE
 );
 
--- 18. Account Info Table (Email, Roles)
+-- 16. Account Info Table (Email, Roles)
 CREATE TABLE account_info (
     info_id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL UNIQUE,
@@ -296,7 +275,7 @@ CREATE TABLE account_info (
         ON DELETE CASCADE
 );
 
--- 19. Login Details Table (Username, Password)
+-- 17. Login Details Table (Username, Password)
 CREATE TABLE login_details (
     login_id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL UNIQUE,
@@ -309,7 +288,7 @@ CREATE TABLE login_details (
         ON DELETE CASCADE
 );
 
--- 20. Account Activity Table (Logs)
+-- 18. Account Activity Table (Logs)
 CREATE TABLE account_activity (
     activity_id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
@@ -322,7 +301,7 @@ CREATE TABLE account_activity (
         REFERENCES credential(user_id)
 );
 
--- 21. Performance Feedback Table
+-- 19. Performance Feedback Table
 CREATE TABLE performance_feedback (
     feedback_id SERIAL PRIMARY KEY,
     
@@ -351,7 +330,7 @@ CREATE TABLE performance_feedback (
         ON DELETE CASCADE
 );
 
--- 22. Sample Data for Feedback
+-- 20. Sample Data for Feedback
 -- Bob (Manager) reviews Alice
 INSERT INTO performance_feedback (employee_id, reviewer_id, rating, comments, feedback_date, evaluation_id) VALUES 
 (1, 2, 4.5, 'Excellent performance on the HR migration project.', '2025-10-25', 101);
@@ -376,7 +355,7 @@ JOIN employee rev ON pf.reviewer_id = rev.employee_id;
 
 -- ... [Append this after your existing script] ...
 
--- 23. Performance Evaluation Table (The Master Record)
+-- 21. Performance Evaluation Table (The Master Record)
 -- This table matches the standardized Java Entity 'PerformanceEvaluationEntity'
 CREATE TABLE performance_evaluation (
     evaluation_id SERIAL PRIMARY KEY,
@@ -391,7 +370,7 @@ CREATE TABLE performance_evaluation (
         ON DELETE CASCADE
 );
 
--- 24. Link Feedback to Evaluation (Foreign Key Update)
+-- 22. Link Feedback to Evaluation (Foreign Key Update)
 -- Your existing table 'performance_feedback' (21) had a loose column 'evaluation_id'.
 -- Now that we created the table, let's enforce the relationship.
 
@@ -401,7 +380,7 @@ ALTER TABLE performance_feedback
     REFERENCES performance_evaluation(evaluation_id)
     ON DELETE SET NULL;
 
--- 25. Sample Data for Performance Evaluation
+-- 23. Sample Data for Performance Evaluation
 -- Creating evaluations for Alice (ID 1), Bob (ID 2), and Charlie (ID 3)
 
 INSERT INTO performance_evaluation (evaluation_id, employee_id, evaluation_period, performance_rating, comments) VALUES
@@ -412,7 +391,7 @@ INSERT INTO performance_evaluation (evaluation_id, employee_id, evaluation_perio
 -- Note: The ID 101 used here matches the 'evaluation_id' used in your 
 -- previous 'performance_feedback' INSERT statements in step 22.
 
--- 26. Final Verification Query
+-- 24. Final Verification Query
 SELECT 
     e.employee_name,
     pe.evaluation_period,

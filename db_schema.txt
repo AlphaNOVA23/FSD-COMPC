@@ -35,7 +35,7 @@ CREATE TABLE department_head (
     employee_id INTEGER UNIQUE REFERENCES employee(employee_id),
     head_role VARCHAR(100),
     head_term VARCHAR(50),
-    department_id INTEGER UNIQUE -- FK added later
+    department_id INTEGER UNIQUE REFERENCES department(department_id) -- Link directly!
 );
 
 -- Department Table
@@ -43,7 +43,7 @@ CREATE TABLE department (
     department_id SERIAL PRIMARY KEY,
     department_name VARCHAR(100) NOT NULL,
     department_location VARCHAR(255),
-    head_id INTEGER REFERENCES department_head(head_id),
+    -- head_id REMOVED from here
     department_capacity INTEGER,
     department_contact VARCHAR(255)
 );

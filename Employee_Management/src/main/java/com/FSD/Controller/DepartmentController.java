@@ -54,7 +54,10 @@ public class DepartmentController {
     @Operation(summary = "Create a new department", description = "Creates a new department entity and saves it to the database")
     public DepartmentEntity createDepartment(@RequestBody DepartmentEntity department) {
         logger.info("Request received to create a new department");
-        return departmentRepository.save(department);
+        if (department != null) {
+            return departmentRepository.save(department);
+        }
+        return null;
     }
 
     @PutMapping("/{id}")
