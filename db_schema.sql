@@ -15,6 +15,8 @@ DROP TABLE IF EXISTS position_details CASCADE;
 DROP TABLE IF EXISTS timesheet CASCADE;
 DROP TABLE IF EXISTS shift CASCADE;
 DROP TABLE IF EXISTS salaries CASCADE;
+DROP TABLE IF EXISTS leaves CASCADE;
+DROP TABLE IF EXISTS leave_type CASCADE;
 DROP TABLE IF EXISTS department CASCADE;
 DROP TABLE IF EXISTS department_head CASCADE;
 DROP TABLE IF EXISTS employee CASCADE;
@@ -29,31 +31,47 @@ CREATE TABLE employee (
     employee_name VARCHAR(100) NOT NULL
 );
 
--- Department Head (Circular dependency - create first without FK)
+-- Department (Created BEFORE Head)
+-- Note: This table has no Foreign Key to Head anymore.
+CREATE TABLE department (
+    department_id SERIAL PRIMARY KEY,
+    department_name VARCHAR(100) NOT NULL,
+    department_location VARCHAR(255),
+    department_capacity INTEGER,
+    department_contact VARCHAR(255)
+);
+
+-- Department Head (Created AFTER Department)
+-- Now it is safe to reference 'department' because it exists above.
 CREATE TABLE department_head (
     head_id SERIAL PRIMARY KEY,
     employee_id INTEGER UNIQUE REFERENCES employee(employee_id),
     head_role VARCHAR(100),
     head_term VARCHAR(50),
-    department_id INTEGER UNIQUE REFERENCES department(department_id) -- Link directly!
+    department_id INTEGER UNIQUE REFERENCES department(department_id) -- Works now!
 );
-
--- Department Table
-CREATE TABLE department (
-    department_id SERIAL PRIMARY KEY,
-    department_name VARCHAR(100) NOT NULL,
-    department_location VARCHAR(255),
-    -- head_id REMOVED from here
-    department_capacity INTEGER,
-    department_contact VARCHAR(255)
-);
-
--- Establish Circular Link
-ALTER TABLE department_head 
-ADD CONSTRAINT fk_head_department FOREIGN KEY (department_id) REFERENCES department(department_id);
 
 -- =============================================
--- 3. PAYROLL & POSITION
+-- 3. LEAVE MANAGEMENT MODULE
+-- =============================================
+
+-- Leave Types (e.g., Sick, Vacation)
+CREATE TABLE leave_type (
+    leave_type_id SERIAL PRIMARY KEY,
+    type_name VARCHAR(50) UNIQUE NOT NULL
+);
+
+-- Leaves (Links Employee to Leave Type)
+CREATE TABLE leaves (
+    leave_id SERIAL PRIMARY KEY,
+    employee_id INTEGER REFERENCES employee(employee_id) ON DELETE CASCADE,
+    leave_type_id INTEGER REFERENCES leave_type(leave_type_id),
+    leave_count INTEGER NOT NULL,
+    is_approved BOOLEAN DEFAULT FALSE
+);
+
+-- =============================================
+-- 4. PAYROLL & POSITION
 -- =============================================
 
 -- Salaries Table
@@ -81,7 +99,7 @@ CREATE TABLE position_details (
 );
 
 -- =============================================
--- 4. WORK MANAGEMENT (Clients, Projects, Tasks)
+-- 5. WORK MANAGEMENT (Clients, Projects, Tasks)
 -- =============================================
 
 CREATE TABLE client (
@@ -126,7 +144,7 @@ CREATE TABLE task (
 );
 
 -- =============================================
--- 5. TIME TRACKING
+-- 6. TIME TRACKING
 -- =============================================
 
 CREATE TABLE shift (
@@ -151,7 +169,7 @@ CREATE TABLE timesheet (
 );
 
 -- =============================================
--- 6. SECURITY & ACCESS
+-- 7. SECURITY & ACCESS
 -- =============================================
 
 CREATE TABLE credential (
@@ -182,7 +200,7 @@ CREATE TABLE account_activity (
 );
 
 -- =============================================
--- 7. PERFORMANCE MANAGEMENT
+-- 8. PERFORMANCE MANAGEMENT
 -- =============================================
 
 CREATE TABLE performance_evaluation (
@@ -205,7 +223,7 @@ CREATE TABLE performance_feedback (
 );
 
 -- =============================================
--- 8. DATA INSERTION (SEED DATA)
+-- 9. DATA INSERTION (SEED DATA)
 -- =============================================
 
 -- Employees
@@ -214,20 +232,27 @@ INSERT INTO employee (employee_name) VALUES
 ('Bob Williams'), 
 ('Charlie Brown');
 
--- Department Heads & Departments
-
--- 1. Insert Departments first (Cleaner!)
-INSERT INTO department (department_name, department_location, department_capacity, department_contact) VALUES
+-- Departments
+INSERT INTO department (department_name, department_location, department_capacity, department_contact) VALUES 
 ('Human Resources', 'Building A', 10, 'contact@hr.com'),
 ('Engineering', 'Building B', 50, 'tech@eng.com');
 
--- 2. Insert Heads (referencing the departments above)
-INSERT INTO department_head (employee_id, head_role, head_term, department_id) VALUES
+-- Department Heads
+INSERT INTO department_head (employee_id, head_role, head_term, department_id) VALUES 
 (1, 'HR Director', '2024-2026', 1),
 (2, 'Lead Engineer', '2023-2025', 2);
 
-UPDATE department_head SET department_id = 1 WHERE head_id = 1;
-UPDATE department_head SET department_id = 2 WHERE head_id = 2;
+-- Leave Types
+INSERT INTO leave_type (type_name) VALUES 
+('Sick Leave'), 
+('Casual Leave'), 
+('Earned Leave');
+
+-- Leaves
+INSERT INTO leaves (employee_id, leave_type_id, leave_count, is_approved) VALUES 
+(1, 1, 2, TRUE),   -- Alice: 2 days Sick Leave (Approved)
+(2, 2, 5, FALSE),  -- Bob: 5 days Casual Leave (Pending)
+(3, 3, 10, TRUE);  -- Charlie: 10 days Earned Leave (Approved)
 
 -- Salaries
 INSERT INTO salaries (employee_id, base_salary, bonus, deductions, net_salary) VALUES 

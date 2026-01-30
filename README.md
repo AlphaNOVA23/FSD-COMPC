@@ -42,7 +42,12 @@ This is a robust, modular REST API built with **Java Spring Boot** and **Postgre
 - **Shift:** Defines work schedules (Morning, Evening, Night shifts).
 - **Timesheet:** Records employee clock-in/out times, overtime, and attendance status.
 
-### 5. Security Module
+### 5. Leave Management Module [NEW]
+
+- **Leave Type:** Defines categories like "Sick Leave", "Casual Leave", etc.
+- **Leaves:** Handles the application process. Links an **Employee** to a **Leave Type** and tracks approval status (`is_approved`).
+
+### 6. Security Module
 
 - **Credential:** User authentication foundation.
 - **Account Info:** Email and role management.
@@ -71,6 +76,10 @@ This is a robust, modular REST API built with **Java Spring Boot** and **Postgre
 **Time Tracking:**
 - `shift` - Shift definitions
 - `timesheet` - Daily attendance records
+
+**Leave Management:**
+- `leave_type` - Leave category definitions (e.g., Sick, Casual)
+- `leaves` - Employee leave requests and approval status tracking
 
 **Security:**
 - `credential` - User authentication base
@@ -120,7 +129,7 @@ This is a robust, modular REST API built with **Java Spring Boot** and **Postgre
 1. In the Database Navigator, expand `employee_management`
 2. Right-click on **Tables** folder
 3. Select **Refresh** (F5)
-4. You should see 18 tables:
+4. You should see 20 tables:
    - employee
    - department
    - department_head
@@ -131,6 +140,8 @@ This is a robust, modular REST API built with **Java Spring Boot** and **Postgre
    - responsibility
    - task
    - shift
+   - leave_type
+   - leaves
    - timesheet
    - credential
    - account_info
