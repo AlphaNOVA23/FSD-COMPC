@@ -21,7 +21,7 @@ public class MockAuthController {
         Map<String, String> response = new HashMap<>();
         response.put("token", "dummy-jwt-token-from-spring");
         return ResponseEntity.ok(response);
-    }
+    }   
 
     @PostMapping("/users")
     public ResponseEntity<Map<String, String>> mockRegister(@RequestBody Map<String, Object> payload) {
