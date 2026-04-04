@@ -39,7 +39,7 @@ public class DepartmentHeadEntity {
      */
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", referencedColumnName = "employee_id")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonIgnoreProperties({"departmentHeadRole", "responsibilities", "credential", "salary", "positionDetails"})
     private EmployeeEntity employee;
     
     /**
