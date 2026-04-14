@@ -37,11 +37,13 @@ public class ProjectEntity {
     // Standardized: Linked to existing DepartmentEntity
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
+    @JsonIgnoreProperties({"employees", "departmentHead", "projects"})
     private DepartmentEntity department;
 
     // Standardized: Linked to existing EmployeeEntity (Project Lead)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id") 
+    @JsonIgnoreProperties({"responsibilities", "department", "trainings"})
     private EmployeeEntity projectLead;
 
     public ProjectEntity() {}

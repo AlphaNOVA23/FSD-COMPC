@@ -42,12 +42,18 @@ This is a robust, modular REST API built with **Java Spring Boot** and **Postgre
 - **Shift:** Defines work schedules (Morning, Evening, Night shifts).
 - **Timesheet:** Records employee clock-in/out times, overtime, and attendance status.
 
-### 5. Leave Management Module [NEW]
+### 5. Leave Management Module
 
 - **Leave Type:** Defines categories like "Sick Leave", "Casual Leave", etc.
 - **Leaves:** Handles the application process. Links an **Employee** to a **Leave Type** and tracks approval status (`is_approved`).
 
-### 6. Security Module
+### 6. Training Management Module [NEW]
+
+- **Training Program:** Enterprise courses offered (Name, Trainer, Duration).
+- **Employee Training:** Course enrollments linking an Employee to a Program with Status and Grades.
+- **Training Feedback:** Direct review records linked to a course.
+
+### 7. Security Module
 
 - **Credential:** User authentication foundation.
 - **Account Info:** Email and role management.
@@ -80,6 +86,11 @@ This is a robust, modular REST API built with **Java Spring Boot** and **Postgre
 **Leave Management:**
 - `leave_type` - Leave category definitions (e.g., Sick, Casual)
 - `leaves` - Employee leave requests and approval status tracking
+
+**Training Management:**
+- `training_program` - Corporate course definitions
+- `employee_training` - Individual employee enrollments
+- `training_feedback` - End-of-course surveys and ratings
 
 **Security:**
 - `credential` - User authentication base

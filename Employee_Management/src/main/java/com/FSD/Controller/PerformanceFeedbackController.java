@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/performance-feedback")
+@RequestMapping("/api/performance-feedbacks")
 @Tag(name = "Performance Feedback", description = "APIs for managing employee performance reviews")
 public class PerformanceFeedbackController {
 

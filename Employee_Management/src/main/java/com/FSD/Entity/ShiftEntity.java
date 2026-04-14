@@ -2,6 +2,7 @@ package com.FSD.Entity;
 
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
@@ -24,9 +25,11 @@ public class ShiftEntity {
     @Column(name = "shift_type", nullable = false)
     private String shiftType;
 
+    @JsonFormat(pattern = "HH:mm:ss")
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
 
+    @JsonFormat(pattern = "HH:mm:ss")
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
 

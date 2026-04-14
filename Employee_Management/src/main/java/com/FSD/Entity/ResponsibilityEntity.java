@@ -31,15 +31,14 @@ public class ResponsibilityEntity {
     // ✅ REFACTORED: Now links to the actual ProjectEntity
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
+    @JsonIgnoreProperties({"responsibilities", "projectLead", "department"})
     private ProjectEntity project;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "responsibility_type", nullable = false)
-    private ResponsibilityType responsibilityType;
+    private String responsibilityType;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "clearance_level", nullable = false)
-    private ClearanceLevel clearanceLevel;
+    private String clearanceLevel;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "start_date", nullable = false)
@@ -51,17 +50,16 @@ public class ResponsibilityEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
+    @JsonIgnoreProperties({"responsibilities", "department", "trainings"})
     private EmployeeEntity employee;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
+    @JsonIgnoreProperties({"responsibilities", "department", "trainings"})
     private EmployeeEntity createdBy;
 
     @Column(name = "created_date")
     private OffsetDateTime createdDate;
-
-    public enum ResponsibilityType { PROJECT_LEAD, CONTRIBUTOR, REVIEWER, MENTOR, STAKEHOLDER }
-    public enum ClearanceLevel { NONE, INTERNAL, CONFIDENTIAL, SECRET, TOP_SECRET }
 
     public ResponsibilityEntity() {}
 
@@ -72,11 +70,11 @@ public class ResponsibilityEntity {
     public ProjectEntity getProject() { return project; }
     public void setProject(ProjectEntity project) { this.project = project; }
 
-    public ResponsibilityType getResponsibilityType() { return responsibilityType; }
-    public void setResponsibilityType(ResponsibilityType responsibilityType) { this.responsibilityType = responsibilityType; }
+    public String getResponsibilityType() { return responsibilityType; }
+    public void setResponsibilityType(String responsibilityType) { this.responsibilityType = responsibilityType; }
 
-    public ClearanceLevel getClearanceLevel() { return clearanceLevel; }
-    public void setClearanceLevel(ClearanceLevel clearanceLevel) { this.clearanceLevel = clearanceLevel; }
+    public String getClearanceLevel() { return clearanceLevel; }
+    public void setClearanceLevel(String clearanceLevel) { this.clearanceLevel = clearanceLevel; }
 
     public LocalDate getStartDate() { return startDate; }
     public void setStartDate(LocalDate startDate) { this.startDate = startDate; }

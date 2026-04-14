@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jdk.jfr.Description;
 
 @RestController
-@RequestMapping("/account-info")
+@RequestMapping("/api/account-info")
 @Description("Controller for managing account details")
 public class AccountInfoController {
 

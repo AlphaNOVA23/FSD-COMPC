@@ -32,6 +32,9 @@ public class LoginDetailsEntity {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
+    @Column(name = "role", nullable = false)
+    private String role = "ROLE_USER"; // Default to a standard employee
+
     public LoginDetailsEntity() {}
 
     // Getters and Setters
@@ -46,4 +49,7 @@ public class LoginDetailsEntity {
 
     public String getPasswordHash() { return passwordHash; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }

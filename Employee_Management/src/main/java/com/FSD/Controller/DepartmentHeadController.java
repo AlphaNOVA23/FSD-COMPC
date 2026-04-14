@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jdk.jfr.Description;
 
 @RestController
-@RequestMapping("/department-heads")
+@RequestMapping("/api/department-heads")
 @Description("Controller for managing department head entities")
 public class DepartmentHeadController {
 

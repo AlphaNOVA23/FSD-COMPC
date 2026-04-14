@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jdk.jfr.Description;
 
 @RestController
-@RequestMapping("/tasks")
+@RequestMapping("/api/tasks")
 @Description("Controller for managing tasks")
 public class TaskController {
 

@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jdk.jfr.Description;
 
 @RestController
-@RequestMapping("/positions")
+@RequestMapping("/api/positions")
 @Description("Controller for managing position details")
 public class PositionDetailsController {
 

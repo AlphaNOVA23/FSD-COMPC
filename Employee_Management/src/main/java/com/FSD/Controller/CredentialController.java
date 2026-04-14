@@ -19,7 +19,7 @@ import com.FSD.Repository.CredentialRepository;
 import jdk.jfr.Description;
 
 @RestController
-@RequestMapping("/credentials")
+@RequestMapping("/api/credentials")
 @Description("Controller for managing user credentials")
 public class CredentialController {
 

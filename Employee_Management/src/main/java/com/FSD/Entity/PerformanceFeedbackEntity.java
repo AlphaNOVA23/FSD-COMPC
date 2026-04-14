@@ -27,11 +27,13 @@ public class PerformanceFeedbackEntity {
     // The Employee receiving the feedback
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "responsibilities", "department", "trainings"})
     private EmployeeEntity employee;
 
     // The Employee giving the feedback (Reviewer)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewer_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "responsibilities", "department", "trainings"})
     private EmployeeEntity reviewer;
 
     @Column(name = "rating", nullable = false)

@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jdk.jfr.Description;
 
 @RestController
-@RequestMapping("/account-activities")
+@RequestMapping("/api/account-activities")
 @Description("Controller for tracking user account activity logs")
 public class AccountActivityController {
 

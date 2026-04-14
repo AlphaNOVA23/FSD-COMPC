@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jdk.jfr.Description;
 
 @RestController
-@RequestMapping("/shifts")
+@RequestMapping("/api/shifts")
 @Description("Controller for managing work shifts")
 public class ShiftController {
 

@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jdk.jfr.Description;
 
 @RestController
-@RequestMapping("/responsibilities")
+@RequestMapping("/api/responsibilities")
 @Description("Controller for managing responsibilities")
 public class ResponsibilityController {
 

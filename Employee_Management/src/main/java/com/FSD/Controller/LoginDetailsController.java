@@ -21,7 +21,7 @@ import com.FSD.Repository.LoginDetailsRepository;
 import jdk.jfr.Description;
 
 @RestController
-@RequestMapping("/login-details")
+@RequestMapping("/api/login-details")
 @Description("Controller for managing login credentials")
 public class LoginDetailsController {
 

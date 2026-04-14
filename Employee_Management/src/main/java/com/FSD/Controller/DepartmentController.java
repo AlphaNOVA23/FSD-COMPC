@@ -1,5 +1,6 @@
 package com.FSD.Controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,22 +21,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.FSD.Entity.DepartmentEntity;
 import com.FSD.Repository.DepartmentRepository;
+import com.FSD.Entity.EmployeeEntity;
+import com.FSD.Repository.EmployeeRepository;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jdk.jfr.Description;
 
 @RestController
-@RequestMapping("/departments")
+@RequestMapping("/api/departments")
 @Description("Controller for managing department entities")
 public class DepartmentController {
 
     @Autowired
     private DepartmentRepository departmentRepository;
 
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
     private static final Logger logger = LoggerFactory.getLogger(DepartmentController.class);
 
     @GetMapping
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get all departments", description = "Retrieves a list of all department entities")
     public List<DepartmentEntity> getAllDepartments() {
         logger.info("Request received to get all departments");
@@ -43,6 +50,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get department by ID", description = "Retrieves a department entity by its ID")
     public ResponseEntity<DepartmentEntity> getDepartmentById(@PathVariable("id") Integer id) {
         logger.info("Request received to get department with ID: {}", id);
@@ -51,6 +59,7 @@ public class DepartmentController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create a new department", description = "Creates a new department entity and saves it to the database")
     public DepartmentEntity createDepartment(@RequestBody DepartmentEntity department) {
         logger.info("Request received to create a new department");
@@ -61,6 +70,7 @@ public class DepartmentController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update an existing department", description = "Updates an existing department entity with the provided data")
     public ResponseEntity<DepartmentEntity> updateDepartment(@PathVariable("id") Integer id, @RequestBody DepartmentEntity departmentDetails) {
         logger.info("Request received to update department with ID: {}", id);
@@ -79,6 +89,7 @@ public class DepartmentController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Delete department by ID", description = "Deletes a department entity by its ID")
     public ResponseEntity<Void> deleteDepartment(@PathVariable("id") Integer id) {
         logger.info("Request received to delete department with ID: {}", id);
@@ -91,6 +102,7 @@ public class DepartmentController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Partially update a department", description = "Updates specific fields of an existing department entity")
     public ResponseEntity<DepartmentEntity> patchDepartment(@PathVariable("id") Integer id, @RequestBody DepartmentEntity departmentDetails) {
         logger.info("Request received to patch department with ID: {}", id);
@@ -104,6 +116,7 @@ public class DepartmentController {
                 department.setDepartmentLocation(departmentDetails.getDepartmentLocation());
             }
             if (departmentDetails.getDepartmentHead() != null) {
+                departmentDetails.getDepartmentHead().setDepartment(department);
                 department.setDepartmentHead(departmentDetails.getDepartmentHead());
             }
             if (departmentDetails.getDepartmentCapacity() != null) {
@@ -116,5 +129,27 @@ public class DepartmentController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PutMapping("/{departmentId}/assign/{employeeId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Assign employee to department", description = "Assigns an employee to the specified department")
+    public ResponseEntity<EmployeeEntity> assignEmployeeToDepartment(
+            @PathVariable("departmentId") Integer departmentId,
+            @PathVariable("employeeId") Integer employeeId) {
+        
+        Optional<DepartmentEntity> departmentOpt = departmentRepository.findById(departmentId);
+        Optional<EmployeeEntity> employeeOpt = employeeRepository.findById(employeeId);
+        
+        if (departmentOpt.isPresent() && employeeOpt.isPresent()) {
+            DepartmentEntity department = departmentOpt.get();
+            EmployeeEntity employee = employeeOpt.get();
+            
+            employee.setDepartment(department);
+            employeeRepository.save(employee);
+            
+            return ResponseEntity.ok(employee);
+        }
+        return ResponseEntity.notFound().build();
     }
 }

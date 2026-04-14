@@ -21,7 +21,7 @@ import com.FSD.Repository.ProjectRepository;
 import jdk.jfr.Description;
 
 @RestController
-@RequestMapping("/projects")
+@RequestMapping("/api/projects")
 @Description("Controller for managing projects")
 public class ProjectController {
 

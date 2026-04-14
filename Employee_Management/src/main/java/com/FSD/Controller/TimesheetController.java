@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jdk.jfr.Description;
 
 @RestController
-@RequestMapping("/timesheets")
+@RequestMapping("/api/timesheets")
 @Description("Controller for managing timesheets")
 public class TimesheetController {
 

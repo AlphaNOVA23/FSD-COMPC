@@ -36,9 +36,8 @@ public class PositionDetailsEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "job_level", nullable = false)
-    private JobLevel jobLevel;
+    private String jobLevel;
 
     @Column(name = "salary_grade", nullable = false)
     private String salaryGrade;
@@ -52,18 +51,14 @@ public class PositionDetailsEntity {
     @Column(name = "currency", length = 3, nullable = false)
     private String currency;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "employment_type", nullable = false)
-    private EmploymentType employmentType;
+    private String employmentType;
 
     @Column(name = "effective_date", nullable = false)
     private LocalDate effectiveDate;
 
     @Column(name = "created_at", columnDefinition = "timestamptz")
     private OffsetDateTime createdAt;
-
-    public enum JobLevel { INTERN, JUNIOR, SENIOR, LEAD, MANAGER, DIRECTOR, VP, C_LEVEL }
-    public enum EmploymentType { FULL_TIME, PART_TIME, CONTRACT, TEMPORARY, INTERN }
 
     public PositionDetailsEntity() {}
 
@@ -77,8 +72,8 @@ public class PositionDetailsEntity {
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
-    public JobLevel getJobLevel() { return jobLevel; }
-    public void setJobLevel(JobLevel jobLevel) { this.jobLevel = jobLevel; }
+    public String getJobLevel() { return jobLevel; }
+    public void setJobLevel(String jobLevel) { this.jobLevel = jobLevel; }
 
     public String getSalaryGrade() { return salaryGrade; }
     public void setSalaryGrade(String salaryGrade) { this.salaryGrade = salaryGrade; }
@@ -92,8 +87,8 @@ public class PositionDetailsEntity {
     public String getCurrency() { return currency; }
     public void setCurrency(String currency) { this.currency = currency; }
 
-    public EmploymentType getEmploymentType() { return employmentType; }
-    public void setEmploymentType(EmploymentType employmentType) { this.employmentType = employmentType; }
+    public String getEmploymentType() { return employmentType; }
+    public void setEmploymentType(String employmentType) { this.employmentType = employmentType; }
 
     public LocalDate getEffectiveDate() { return effectiveDate; }
     public void setEffectiveDate(LocalDate effectiveDate) { this.effectiveDate = effectiveDate; }

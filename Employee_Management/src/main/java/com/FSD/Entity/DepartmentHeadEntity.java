@@ -39,7 +39,7 @@ public class DepartmentHeadEntity {
      */
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", referencedColumnName = "employee_id")
-    @JsonIgnoreProperties({"departmentHeadRole", "responsibilities", "credential", "salary", "positionDetails"})
+    @JsonIgnoreProperties({"departmentHeadRole", "responsibilities", "credential", "salary", "positionDetails", "department", "trainings"})
     private EmployeeEntity employee;
     
     /**

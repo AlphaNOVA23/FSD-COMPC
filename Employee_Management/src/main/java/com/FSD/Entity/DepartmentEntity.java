@@ -2,6 +2,7 @@ package com.FSD.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 /**
@@ -48,7 +50,7 @@ public class DepartmentEntity {
      * @JsonManagedReference handles the circular dependency during serialization.
      * FetchType.LAZY is added to prevent infinite loops when loading entities.
      */
-    @OneToOne(mappedBy = "department", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnoreProperties("department") // Stops infinite recursion but still shows the head details
     private DepartmentHeadEntity departmentHead;
 
@@ -63,6 +65,13 @@ public class DepartmentEntity {
      */
     @Column(name = "department_contact", length = 255)
     private String departmentContact;
+
+    /**
+     * The standard employees assigned to this department.
+     */
+    @OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"department", "hibernateLazyInitializer", "handler"})
+    private java.util.List<EmployeeEntity> employees;
 
     // Default constructor
     public DepartmentEntity() {
@@ -125,5 +134,13 @@ public DepartmentEntity(String departmentName, String departmentLocation, Depart
 
     public void setDepartmentContact(String departmentContact) {
         this.departmentContact = departmentContact;
+    }
+
+    public java.util.List<EmployeeEntity> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(java.util.List<EmployeeEntity> employees) {
+        this.employees = employees;
     }
 }

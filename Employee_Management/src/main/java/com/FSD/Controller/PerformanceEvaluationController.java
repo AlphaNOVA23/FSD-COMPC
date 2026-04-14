@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jdk.jfr.Description;
 
 @RestController
-@RequestMapping("/performance_evaluations")
+@RequestMapping("/api/performance-evaluations")
 @Description("Controller for managing performance evaluation entities")
 public class PerformanceEvaluationController {
 

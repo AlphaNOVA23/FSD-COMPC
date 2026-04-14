@@ -13,6 +13,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -42,14 +44,25 @@ public class EmployeeEntity {
     private CredentialEntity credential;
 
     // --- 4. Link to Department Head Role (If applicable) ---
-    @OneToOne(mappedBy = "employee", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private DepartmentHeadEntity departmentHeadRole;
 
     // --- 5. Link to Responsibilities/Tasks (Project Work) ---
     // Note: We use a List here for one-to-many
-    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnoreProperties("employee") // Prevent infinite recursion in JSON
     private List<ResponsibilityEntity> responsibilities;
+
+    // --- 6. Link to Department (Standard Employee Assignment) ---
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    @JsonIgnoreProperties({"employees", "departmentHead", "hibernateLazyInitializer", "handler"})
+    private DepartmentEntity department;
+
+    // --- 7. Link to Course Enrollments ---
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"employee", "hibernateLazyInitializer", "handler"})
+    private List<EmployeeTrainingEntity> trainings;
 
     public EmployeeEntity() {
     }
@@ -100,4 +113,10 @@ public class EmployeeEntity {
 
     public List<ResponsibilityEntity> getResponsibilities() { return responsibilities; }
     public void setResponsibilities(List<ResponsibilityEntity> responsibilities) { this.responsibilities = responsibilities; }
+
+    public DepartmentEntity getDepartment() { return department; }
+    public void setDepartment(DepartmentEntity department) { this.department = department; }
+
+    public List<EmployeeTrainingEntity> getTrainings() { return trainings; }
+    public void setTrainings(List<EmployeeTrainingEntity> trainings) { this.trainings = trainings; }
 }

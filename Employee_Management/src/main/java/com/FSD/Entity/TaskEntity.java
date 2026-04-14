@@ -34,13 +34,11 @@ public class TaskEntity {
     @Column(name = "task_name", nullable = false)
     private String taskName;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "priority", nullable = false)
-    private TaskPriority priority;
+    private String priority;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private TaskStatus status;
+    private String status;
 
     @Column(name = "deadline")
     private LocalDate deadline;
@@ -51,9 +49,6 @@ public class TaskEntity {
 
     @Column(name = "created_at", columnDefinition = "timestamptz")
     private OffsetDateTime createdAt;
-
-    public enum TaskPriority { LOW, MEDIUM, HIGH, CRITICAL }
-    public enum TaskStatus { TODO, IN_PROGRESS, BLOCKED, DONE, CANCELED }
 
     public TaskEntity() {}
 
@@ -67,11 +62,11 @@ public class TaskEntity {
     public String getTaskName() { return taskName; }
     public void setTaskName(String taskName) { this.taskName = taskName; }
 
-    public TaskPriority getPriority() { return priority; }
-    public void setPriority(TaskPriority priority) { this.priority = priority; }
+    public String getPriority() { return priority; }
+    public void setPriority(String priority) { this.priority = priority; }
 
-    public TaskStatus getStatus() { return status; }
-    public void setStatus(TaskStatus status) { this.status = status; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
     public LocalDate getDeadline() { return deadline; }
     public void setDeadline(LocalDate deadline) { this.deadline = deadline; }

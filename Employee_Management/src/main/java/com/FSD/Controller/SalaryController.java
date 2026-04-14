@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jdk.jfr.Description;
 
 @RestController
-@RequestMapping("/salaries")
+@RequestMapping("/api/salaries")
 @Description("Controller for managing salary entities")
 public class SalaryController {
 

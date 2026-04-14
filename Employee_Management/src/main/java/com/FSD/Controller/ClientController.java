@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jdk.jfr.Description;
 
 @RestController
-@RequestMapping("/clients")
+@RequestMapping("/api/clients")
 @Description("Controller for managing clients")
 public class ClientController {
 
