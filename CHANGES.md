@@ -34,3 +34,15 @@ The following features are currently **pending** and will be implemented once al
 1.  **Global Exception Handling:** * Currently, controllers handle basic exceptions locally. A `@ControllerAdvice` global handler will be added later to standardize error responses (e.g., 404 Not Found, 500 Internal Error) across the entire application.
 2.  **Centralized Logging (AOP):**
     * While basic logging exists in controllers, a centralized Aspect-Oriented Programming (AOP) approach for logging request/response cycles is planned for a future update.
+
+---
+
+## Recent Addition: Performance Review Entity
+
+### What was added:
+* **`PerformanceReviewEntity.java`**: New entity with a self-referencing foreign key (`previousreview_id` links to another `performance_review` row).
+* **`PerformanceReviewRepository.java`**: Standard JPA repository.
+* **`PerformanceReviewController.java`**: Full CRUD at `/api/performance-reviews`.
+* **`EmployeeEntity.java`**: Updated with a `@OneToMany` list of `performanceReviews`.
+* **`db_schema.sql` / `db_schema.txt` / `queries.txt`**: Updated to 23 tables with CREATE TABLE, seed data, and analytical queries.
+* **Angular `admin-dashboard.component.ts`**: Wired the new section with dropdowns for Employee and Previous Review selection.

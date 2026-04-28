@@ -1,11 +1,12 @@
 -- =============================================
 -- HR MANAGEMENT SYSTEM — FULL SCHEMA & SEED DATA
--- 22 Tables, 10 Employees, Complete Relationships
+-- 23 Tables, 10 Employees, Complete Relationships
 -- =============================================
 
 -- ==================
 -- 1. DROP ALL TABLES
 -- ==================
+DROP TABLE IF EXISTS performance_review CASCADE;
 DROP TABLE IF EXISTS training_feedback CASCADE;
 DROP TABLE IF EXISTS employee_training CASCADE;
 DROP TABLE IF EXISTS training_program CASCADE;
@@ -30,7 +31,7 @@ DROP TABLE IF EXISTS employee CASCADE;
 DROP TABLE IF EXISTS department CASCADE;
 
 -- ========================
--- 2. CREATE ALL 22 TABLES
+-- 2. CREATE ALL 23 TABLES
 -- ========================
 
 -- CORE
@@ -441,3 +442,24 @@ INSERT INTO account_activity (user_id, status, last_login) VALUES
 (4, 'Active', '2025-10-24 14:20:00'),
 (7, 'Inactive', '2025-09-15 10:00:00'),
 (9, 'Active', '2025-10-25 07:45:00');
+
+-- =============================
+-- 2.23 PERFORMANCE REVIEW TABLE
+-- =============================
+CREATE TABLE performance_review (
+    review_id SERIAL PRIMARY KEY,
+    employee_id INTEGER NOT NULL REFERENCES employee(employee_id) ON DELETE CASCADE,
+    review_date DATE,
+    previousreview_id INTEGER REFERENCES performance_review(review_id) ON DELETE SET NULL,
+    attendanceid INTEGER,
+    scorechange INTEGER
+);
+
+-- 3.23 PERFORMANCE REVIEWS (6)
+INSERT INTO performance_review (employee_id, review_date, previousreview_id, attendanceid, scorechange) VALUES
+(1, '2025-06-15', NULL, 95, 5),
+(2, '2025-06-15', NULL, 98, 8),
+(4, '2025-07-01', NULL, 90, 3),
+(1, '2025-12-15', 1, 92, -2),
+(2, '2025-12-15', 2, 97, 6),
+(5, '2025-07-01', NULL, 88, 4);

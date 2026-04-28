@@ -64,6 +64,11 @@ public class EmployeeEntity {
     @JsonIgnoreProperties({"employee", "hibernateLazyInitializer", "handler"})
     private List<EmployeeTrainingEntity> trainings;
 
+    // --- 8. Link to Performance Reviews ---
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"employee", "hibernateLazyInitializer", "handler"})
+    private List<PerformanceReviewEntity> performanceReviews;
+
     public EmployeeEntity() {
     }
 
@@ -119,4 +124,7 @@ public class EmployeeEntity {
 
     public List<EmployeeTrainingEntity> getTrainings() { return trainings; }
     public void setTrainings(List<EmployeeTrainingEntity> trainings) { this.trainings = trainings; }
+
+    public List<PerformanceReviewEntity> getPerformanceReviews() { return performanceReviews; }
+    public void setPerformanceReviews(List<PerformanceReviewEntity> performanceReviews) { this.performanceReviews = performanceReviews; }
 }

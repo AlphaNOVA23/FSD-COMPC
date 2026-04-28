@@ -58,3 +58,27 @@ To prevent the "Infinite Recursion" error (where Department links to Employee wh
 
 ## 🚦 4. Exception Handling
 The **`GlobalExceptionHandler.java`** captures system errors and returns a clean, standardized JSON response back to the frontend, preventing raw stack traces from leaking to the user.
+
+---
+
+## 📊 5. Performance Review Entity (Self-Referencing Relationship)
+The `PerformanceReviewEntity` introduces a unique pattern not seen in the other entities: a **self-referencing foreign key**.
+
+### Schema:
+| Column | Type | Description |
+|---|---|---|
+| `review_id` | PK | Auto-generated primary key |
+| `employee_id` | FK to Employee | The employee being reviewed |
+| `review_date` | Date | When the review took place |
+| `previousreview_id` | FK to self | Links to a prior review for the same employee |
+| `attendanceid` | Integer | Standard attendance score |
+| `scorechange` | Integer | Change in score compared to the previous review |
+
+### Self-Referencing Logic:
+```java
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "previousreview_id")
+@JsonIgnoreProperties({"previousReview", "employee"})
+private PerformanceReviewEntity previousReview;
+```
+This allows chaining reviews together (Review 4 links back to Review 1 for the same employee), enabling historical tracking. `@JsonIgnoreProperties` on `previousReview` prevents infinite recursion during serialization, since the previous review itself could also have a previous review.

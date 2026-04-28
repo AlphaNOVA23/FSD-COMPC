@@ -1,11 +1,12 @@
 -- =============================================
 -- HR MANAGEMENT SYSTEM — QUERIES & DATA REFERENCE
--- 22 Tables, 10 Employees, Complete Relationships
+-- 23 Tables, 10 Employees, Complete Relationships
 -- =============================================
 
 -- ==================
 -- 1. DROP ALL TABLES
 -- ==================
+DROP TABLE IF EXISTS performance_review CASCADE;
 DROP TABLE IF EXISTS training_feedback CASCADE;
 DROP TABLE IF EXISTS employee_training CASCADE;
 DROP TABLE IF EXISTS training_program CASCADE;
@@ -30,7 +31,7 @@ DROP TABLE IF EXISTS employee CASCADE;
 DROP TABLE IF EXISTS department CASCADE;
 
 -- ========================
--- 2. CREATE ALL 22 TABLES
+-- 2. CREATE ALL 23 TABLES
 -- ========================
 
 CREATE TABLE department (department_id SERIAL PRIMARY KEY, department_name VARCHAR(100) NOT NULL, department_location VARCHAR(255), department_capacity INTEGER, department_contact VARCHAR(255));
@@ -268,3 +269,44 @@ SELECT t.task_name, t.priority, t.status, e.employee_name AS assigned_to
 FROM task t JOIN employee e ON t.assigned_to = e.employee_id
 WHERE t.status != 'Completed'
 ORDER BY CASE t.priority WHEN 'Critical' THEN 1 WHEN 'High' THEN 2 WHEN 'Medium' THEN 3 ELSE 4 END;
+
+-- =============================
+-- PERFORMANCE REVIEW TABLE
+-- =============================
+CREATE TABLE performance_review (
+    review_id SERIAL PRIMARY KEY,
+    employee_id INTEGER NOT NULL REFERENCES employee(employee_id) ON DELETE CASCADE,
+    review_date DATE,
+    previousreview_id INTEGER REFERENCES performance_review(review_id) ON DELETE SET NULL,
+    attendanceid INTEGER,
+    scorechange INTEGER
+);
+
+-- Performance Reviews (6)
+INSERT INTO performance_review (employee_id, review_date, previousreview_id, attendanceid, scorechange) VALUES
+(1, '2025-06-15', NULL, 95, 5),
+(2, '2025-06-15', NULL, 98, 8),
+(4, '2025-07-01', NULL, 90, 3),
+(1, '2025-12-15', 1, 92, -2),
+(2, '2025-12-15', 2, 97, 6),
+(5, '2025-07-01', NULL, 88, 4);
+
+-- All performance reviews with employee names
+SELECT e.employee_name, pr.review_date, pr.scorechange, pr.attendanceid
+FROM performance_review pr
+JOIN employee e ON pr.employee_id = e.employee_id
+ORDER BY pr.review_date DESC;
+
+-- Review chain: current review linked to previous review
+SELECT curr.review_id, e.employee_name, curr.review_date, curr.scorechange,
+       prev.review_id AS prev_review_id, prev.review_date AS prev_review_date, prev.scorechange AS prev_scorechange
+FROM performance_review curr
+JOIN employee e ON curr.employee_id = e.employee_id
+LEFT JOIN performance_review prev ON curr.previousreview_id = prev.review_id;
+
+-- Average score change per employee
+SELECT e.employee_name, AVG(pr.scorechange) AS avg_score_change, COUNT(pr.review_id) AS total_reviews
+FROM performance_review pr
+JOIN employee e ON pr.employee_id = e.employee_id
+GROUP BY e.employee_name
+ORDER BY avg_score_change DESC;
