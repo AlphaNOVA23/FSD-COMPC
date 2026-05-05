@@ -1,5 +1,6 @@
 package com.FSD.Controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.FSD.Entity.PositionDetailsEntity;
@@ -28,6 +30,12 @@ public class PositionDetailsController {
     @Autowired
     private PositionDetailsRepository repo;
     private static final Logger logger = LoggerFactory.getLogger(PositionDetailsController.class);
+
+    @GetMapping
+    @Operation(summary = "Get all position details")
+    public List<PositionDetailsEntity> getAllPositions() {
+        return repo.findAll();
+    }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get position by Employee ID")
@@ -53,6 +61,16 @@ public class PositionDetailsController {
             if (details.getBaseSalary() != null) pos.setBaseSalary(details.getBaseSalary());
             if (details.getCurrency() != null) pos.setCurrency(details.getCurrency());
             return ResponseEntity.ok(repo.save(pos));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete position by Employee ID")
+    public ResponseEntity<Void> deletePosition(@PathVariable Integer id) {
+        if (repo.existsById(id)) {
+            repo.deleteById(id);
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
